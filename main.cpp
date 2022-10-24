@@ -7,11 +7,11 @@
 #include <random>
 #include <fstream>
 
-Graph graph(182, 182*sqrt(100));
+
 // Graph graph;
 
 
-int greedy(){
+int greedy(Graph &graph){
     int size = graph.graph.size();
     std::vector<int> coloring(size,0);
     // colors start with 1, 0 is uncolored
@@ -36,10 +36,11 @@ int greedy(){
     return largest;
 }
 
-int main(int argc, char *argv[]){
-
+int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 = output file name
+    argv[1];
     // graph.readFromSTDIN(); // Ctrl+Z+ender or Ctrl+D+enter to stop
-    std::ofstream fout("instance3.txt");
+    Graph graph(atoi(argv[1]), atoi(argv[2]));
+    std::ofstream fout(argv[3]);
     graph.printInstance(fout);
     // std::cout<<greedy();
     return 0;
