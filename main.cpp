@@ -45,6 +45,8 @@ int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 =
     // EXPORT
     // std::ofstream fout(argv[3]);
     // graph.printInstance(fout);
+
+    // RUNNING GREEDY
     std::cout<<greedy(graph);
     return 0;
 }
