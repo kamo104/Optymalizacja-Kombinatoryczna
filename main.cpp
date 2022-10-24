@@ -6,8 +6,9 @@
 #include <iostream>
 #include <random>
 #include <fstream>
+#include <chrono>
 
-
+using namespace std::chrono;
 
 int greedy(Graph &graph){
     int size = graph.graph.size();
@@ -47,6 +48,10 @@ int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 =
     // graph.printInstance(fout);
 
     // RUNNING GREEDY
-    std::cout<<greedy(graph);
+    auto start = high_resolution_clock::now();
+    greedy(graph);
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    std::cout<<duration.count();
     return 0;
 }
