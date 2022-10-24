@@ -7,6 +7,8 @@
 #include <random>
 #include <fstream>
 #include <chrono>
+#include <cstring>
+#include <iomanip>
 
 using namespace std::chrono;
 
@@ -35,23 +37,42 @@ int greedy(Graph &graph){
     return largest;
 }
 
-int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 = output file name
-    // INITIALIZATION WHEN PIPING
+// possible arguments: 
+// -g (--generate) [nodesNum] [edgesNum] [outputFile]
+// -r (--read) [filename]
+int main(int argc, char *argv[]){
+    std::cout << std::setprecision(8) << std::fixed;
     Graph graph;
-    graph.readFromSTDIN(); // Ctrl+Z+ender or Ctrl+D+enter to stop
+    
+    // argument parsing
+    for (int i=0;i<argc;i++){
+        if(std::strcmp(argv[i],"-g")==0 || std::strcmp(argv[i],"--generate")==0){
+            
+            graph.generateRandomGraph(atoi(argv[i+1]),atoi(argv[i+2]));
+            // EXPORT
+            std::ofstream fout(argv[i+3]);
+            graph.printToStream(fout);
+            i+=3;
+            continue;
+        }
+        else if(std::strcmp(argv[i],"-r")==0 || std::strcmp(argv[i],"--read")==0){
+            std::ifstream fin(argv[i+1]);
+            graph.readFromStream(fin);
+            i+=1;
+        }
+    }
 
-    // INITIALIZATION WHEN GENERATING
-    // Graph graph(atoi(argv[1]), atoi(argv[2]));
-
-    // EXPORT
-    // std::ofstream fout(argv[3]);
-    // graph.printInstance(fout);
-
+    // DEBUG
+    // graph.generateRandomGraph(10,100);
+    // graph.print();
+    
     // RUNNING GREEDY
     auto start = high_resolution_clock::now();
-    std::cout<<"max colors: "<< greedy(graph) << "\n";
+    int result= greedy(graph);
     auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    std::cout<<"duration: "<< duration.count() <<"microseconds"<<"\n";
+    double duration = (double)duration_cast<nanoseconds>(stop - start).count();
+    std::cout<<"min colors: "<< result << "\n";
+    std::cout<<"duration: "<< duration*pow(10,-8) <<"seconds"<<"\n";
+    
     return 0;
 }

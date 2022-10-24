@@ -7,8 +7,11 @@
 #include <functional>
 #include <fstream>
 
-bool Compare(std::pair<int,int> a, std::pair<int,int> b){   
+bool comparePairs(std::pair<int,int> a, std::pair<int,int> b){   
     return a.first>b.first;
+}
+bool compareTuples(std::tuple<int,int,int> a, std::tuple<int,int,int> b){   
+    return std::get<0>(a)>std::get<0>(b);
 }
 
 class Graph{
@@ -60,7 +63,7 @@ class Graph{
         }
 
         // connect components to each other in a random order
-        std::priority_queue< std::pair<int,int>, std::vector<std::pair<int,int>>, std::function<bool(std::pair<int,int>, std::pair<int,int>)> > pq(Compare);
+        std::priority_queue< std::pair<int,int>, std::vector<std::pair<int,int>>, std::function<bool(std::pair<int,int>, std::pair<int,int>)> > pq(comparePairs);
 
         for(int i=0;i<size;i++) pq.push(std::make_pair(rand()%size,i));
         int g1 = pq.top().second;
@@ -73,28 +76,42 @@ class Graph{
 
         // add random edges 
         // (we have [size]-1 edges)
-        // pick two random nodes and make an edge between them
-        while(numOfEdges-->size-1){
-            int n1 = rand()%size;
-            int n2 = rand()%size;
-            bool add=1;
-            if(n1==n2){
-                numOfEdges++;
-                continue;
-            }
-            for(int &node : components[g1][n1]){
-                if (node == n2){
-                    numOfEdges++;
-                    add=0;
-                    break;
+        // get a random edge from queue that doesn't yet exist
+        // and add it to the graph
+        std::vector<std::tuple<int,int,int>> possibleEdges;
+        int sizesq = size*size;
+        
+        // generate possible edges
+        for(int i=0;i<size;i++){
+            std::sort(components[g1][i].begin(),components[g1][i].end());
+            int counter=0;
+            for(int &neighbour : components[g1][i]){
+                // std::cout << possibleEdges.size() << "\n";
+                while(counter<neighbour){
+                    if(i>=counter) {counter++;continue;}
+                    possibleEdges.push_back(std::make_tuple(rand()%sizesq,i,counter));
+                    counter++;
                 }
+                counter++;
             }
-
-            if(add){
-                components[g1][n1].push_back(n2);
-                components[g1][n2].push_back(n1);
+            // add any edges that could have an end node bigger than the last neighbour
+            while(counter<size){
+                if(i>=counter){
+                    counter=i+1;
+                    continue;
+                } 
+                possibleEdges.push_back(std::make_tuple(rand()%sizesq,i,counter));
+                counter++;
             }
-            
+        }
+        std::priority_queue< std::tuple<int,int,int>, std::vector<std::tuple<int,int,int>>, std::function<bool(std::tuple<int,int,int>, std::tuple<int,int,int>)> > edgesQueue(compareTuples);
+        for(auto &edge : possibleEdges) edgesQueue.push(edge);
+        
+        while(numOfEdges-->size-1 && !edgesQueue.empty()){
+            auto edge = edgesQueue.top();
+            components[g1][std::get<1>(edge)].push_back(std::get<2>(edge));
+            components[g1][std::get<2>(edge)].push_back(std::get<1>(edge));
+            edgesQueue.pop();
         }
 
         this->graph = components[g1];
@@ -117,6 +134,23 @@ class Graph{
         }
         this->graph = t2;
     }
+
+    void readFromStream(std::ifstream &stream){
+        int size;
+        int n1,n2;
+        stream>> size;
+
+        std::vector<int> t1(0,0); // vector of size 0
+        std::vector<std::vector<int>> t2(size,t1); // vector of size [size] with t1 in every row
+        for(int i=0;i<size;i++){
+            t2[i].push_back(i);
+        }
+        while(stream>>n1>>n2){
+            t2[n1-1].push_back(n2-1);
+            t2[n2-1].push_back(n1-1);
+        }
+        this->graph = t2;
+    }
     
     void print(){
         for(int i=0;i<graph.size();i++){
@@ -127,7 +161,7 @@ class Graph{
         }
     }
 
-    void printInstance(std::ofstream &stream){
+    void printToStream(std::ofstream &stream){
         stream<<this->graph.size()<<"\n";
         for(int i=0;i<this->graph.size();i++){
             for(int j=0;j<this->graph[i].size();j++){
