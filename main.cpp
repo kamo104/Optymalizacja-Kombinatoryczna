@@ -8,8 +8,6 @@
 #include <fstream>
 
 
-// Graph graph;
-
 
 int greedy(Graph &graph){
     int size = graph.graph.size();
@@ -37,11 +35,16 @@ int greedy(Graph &graph){
 }
 
 int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 = output file name
-    argv[1];
-    // graph.readFromSTDIN(); // Ctrl+Z+ender or Ctrl+D+enter to stop
-    Graph graph(atoi(argv[1]), atoi(argv[2]));
-    std::ofstream fout(argv[3]);
-    graph.printInstance(fout);
-    // std::cout<<greedy();
+    // INITIALIZATION WHEN PIPING
+    Graph graph;
+    graph.readFromSTDIN(); // Ctrl+Z+ender or Ctrl+D+enter to stop
+
+    // INITIALIZATION WHEN GENERATING
+    // Graph graph(atoi(argv[1]), atoi(argv[2]));
+
+    // EXPORT
+    // std::ofstream fout(argv[3]);
+    // graph.printInstance(fout);
+    std::cout<<greedy(graph);
     return 0;
 }
