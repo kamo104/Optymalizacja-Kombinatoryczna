@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <fstream>
 
-Graph graph(6, 5);
+Graph graph(182, 182*sqrt(100));
 // Graph graph;
 
 
@@ -38,7 +39,8 @@ int greedy(){
 int main(int argc, char *argv[]){
 
     // graph.readFromSTDIN(); // Ctrl+Z+ender or Ctrl+D+enter to stop
-    graph.print();
-    std::cout<<greedy();
+    std::ofstream fout("instance3.txt");
+    graph.printInstance(fout);
+    // std::cout<<greedy();
     return 0;
 }

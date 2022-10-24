@@ -5,6 +5,7 @@
 #include <iostream>
 #include <random>
 #include <functional>
+#include <fstream>
 
 bool Compare(std::pair<int,int> a, std::pair<int,int> b){   
     return a.first>b.first;
@@ -123,6 +124,16 @@ class Graph{
                 std::cout<<graph[i][j]<<" ";
             }
             std::cout<<std::endl;
+        }
+    }
+
+    void printInstance(std::ofstream &stream){
+        stream<<this->graph.size()<<"\n";
+        for(int i=0;i<this->graph.size();i++){
+            for(int j=0;j<this->graph[i].size();j++){
+                if(i==j) continue;
+                stream<< i+1 << " " << j+1 <<"\n";
+            }
         }
     }
 
