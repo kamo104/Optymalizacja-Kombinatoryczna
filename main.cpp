@@ -49,9 +49,9 @@ int main(int argc, char *argv[]){ // arg1 = graph size, arg2 = edges num, arg3 =
 
     // RUNNING GREEDY
     auto start = high_resolution_clock::now();
-    greedy(graph);
+    std::cout<<"max colors: "<< greedy(graph) << "\n";
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    std::cout<<duration.count();
+    std::cout<<"duration: "<< duration.count() <<"microseconds"<<"\n";
     return 0;
 }
