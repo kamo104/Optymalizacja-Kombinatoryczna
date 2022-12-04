@@ -12,13 +12,12 @@
 
 using namespace std::chrono;
 
-int greedy(Graph &graph){
-    int size = graph.graph.size();
-    std::vector<int> coloring(size,0);
+int greedy(Graph &graph){ //std::vector<int> sequence
+    std::vector<int> coloring(graph.size(),0);
     // colors start with 1, 0 is uncolored
 
     //for each node check with its neighbours which color is available
-    for(int i=0;i<size;i++){
+    for(int i=0;i<graph.size();i++){
         std::vector<int> neighColors;
         for(int &neigh : graph.graph[i]){
             neighColors.push_back(coloring[neigh]);

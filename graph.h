@@ -47,6 +47,9 @@ class Graph{
 
 
     public:
+    int size(){
+        return this->graph.size();
+    }
     void generateRandomGraph(int size, int numOfEdges){
         graph.clear();
         // [size] components
