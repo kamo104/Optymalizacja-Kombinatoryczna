@@ -2,7 +2,7 @@
 
 ## compilation command:
 
-> g++ genetic.cpp graph.cpp greedy.cpp main.cpp -o main.exe
+    g++ genetic.cpp graph.cpp greedy.cpp main.cpp -o main.exe
 
 ## possible arguments: 
 * -g (--generate) \[nodesNum] \[edgesNum] \[outputFile]
