@@ -1,4 +1,3 @@
-#include "graph.h"
 #include <stdio.h>
 #include <vector>
 #include <queue>
@@ -10,44 +9,33 @@
 #include <cstring>
 #include <iomanip>
 
+#include "graph.h"
+#include "genetic.h"
+#include "greedy.h"
+
 using namespace std::chrono;
-
-int greedy(Graph &graph){ //std::vector<int> sequence
-    std::vector<int> coloring(graph.size(),0);
-    // colors start with 1, 0 is uncolored
-
-    //for each node check with its neighbours which color is available
-    for(int i=0;i<graph.size();i++){
-        std::vector<int> neighColors;
-        for(int &neigh : graph.graph[i]){
-            neighColors.push_back(coloring[neigh]);
-        }
-        std::sort(neighColors.begin(),neighColors.end());
-
-        // smallest available color
-        int available=1;
-        for(int &neighColor : neighColors) if(neighColor==available) available++;
-        coloring[i] = available;
-    }
-
-    //check coloring for largest color
-    int largest=0;
-    for(int &color : coloring) color >largest ? largest = color : largest=largest;
-    return largest;
-}
 
 // possible arguments: 
 // -g (--generate) [nodesNum] [edgesNum] [outputFile]
 // -r (--read) [filename]
+// -s (--solve) (whether or not to solve the generated/read graph)
+// --print (prints the generated/read graph to stdout)
+// -p (--population) [populationSize]
+// -e (--elite) [elitePercent] (what percentage of the population is considered "elite" (int))
+// --parent [parentPercent] (what percentage of the population will become parents)
+// -c (--crossover) [crossoverPercent] (what percantage of all children(excluding the elite) will come from crossover)
+// -m (--mutation) [mutationChance] (the probability of a random mutation at every step of a solving sequence)(1/10000)
 int main(int argc, char *argv[]){
-    std::cout << std::setprecision(8) << std::fixed;
     Graph graph;
-    
+    Genetic solver(&graph);
+    bool solve=false;
+
     // argument parsing
     for (int i=0;i<argc;i++){
         if(std::strcmp(argv[i],"-g")==0 || std::strcmp(argv[i],"--generate")==0){
-            
+
             graph.generateRandomGraph(atoi(argv[i+1]),atoi(argv[i+2]));
+
             // EXPORT
             std::ofstream fout(argv[i+3]);
             graph.printToStream(fout);
@@ -59,19 +47,68 @@ int main(int argc, char *argv[]){
             graph.readFromStream(fin);
             i+=1;
         }
+        else if(std::strcmp(argv[i],"-p")==0 || std::strcmp(argv[i],"--population")==0){
+            solver.populationSize = atoi(argv[i+1]);
+            i+=1;
+        }
+        else if(std::strcmp(argv[i],"-e")==0 || std::strcmp(argv[i],"--elite")==0){
+            solver.elitePercent = atoi(argv[i+1]);
+            i+=1;
+        }
+        else if(std::strcmp(argv[i],"--parent")==0){
+            solver.parentPercent = atoi(argv[i+1]);
+            i+=1;
+        }
+        else if(std::strcmp(argv[i],"-c")==0 || std::strcmp(argv[i],"--crossover")==0){
+            solver.crossoverPercent = atoi(argv[i+1]);
+            i+=1;
+        }
+        else if(std::strcmp(argv[i],"-m")==0 || std::strcmp(argv[i],"--mutation")==0){
+            solver.mutationChance = atoi(argv[i+1]);
+            i+=1;
+        }
+        else if(std::strcmp(argv[i],"-s")==0 || std::strcmp(argv[i],"--solve")==0){
+            solve=true;
+        }
+        else if(std::strcmp(argv[i],"--print")==0){
+            std::cout << "\n";
+            graph.print();
+            std::cout << "\n\n";
+        }
     }
-
-    // DEBUG
-    // graph.generateRandomGraph(10,100);
-    // graph.print();
     
-    // RUNNING GREEDY
-    auto start = high_resolution_clock::now();
-    int result= greedy(graph);
-    auto stop = high_resolution_clock::now();
-    double duration = (double)duration_cast<nanoseconds>(stop - start).count();
-    std::cout<<"min colors: "<< result << "\n";
-    std::cout<<"duration: "<< duration*pow(10,-8) <<"seconds"<<"\n";
+    // IF -s NOT PRESENT END EXECUTION
+    if(!solve) return 0;
+
+    // GENERATING INITIAL POPULATION
+    solver.generatePopulation();
+
+    // SCORE THE POPULATION
+    std::cout << solver.scorePopulation() << "\n";
+
+    // ELITE GENERATION
+    solver.selectElite();
+
+    // PARENT SELECTION
+    solver.selectParents();
+
+    // MUTATIONS AND CROSSOVERS
+    solver.generateChildren();
+
+    // REPLACE THE POPULATION WITH ELITES AND NEW CHILDREN
+    solver.updatePopulation();
+
+    std::cout << "ended successfully!!" << std::endl;
+    // TIMING
+    // auto start = high_resolution_clock::now();
+
+    // PUT THE SOLVING FUNCTION HERE
+
+    // auto stop = high_resolution_clock::now();
+
+    // double duration = (double)duration_cast<nanoseconds>(stop - start).count();
+
+    // std::cout << "duration: " << duration*pow(10,-8) << "seconds" << "\n";
     
     return 0;
 }
