@@ -46,7 +46,7 @@ void Genetic::selectElite(){
     std::vector<int> elite;
 
     int eliteCutoff = this->scores.size()*this->elitePercent/100;
-
+    
     for (int i=0;i<eliteCutoff;i++) elite.push_back(this->scores[i].second);
 
     this->elites = elite;
@@ -91,8 +91,10 @@ void Genetic::generateChildren(){
 
     std::vector<std::vector<int>> children;
 
+
     while(mutatedChildrenAmount--){
         int selectedParent = rand()%this->parents.size();
+        
         children.push_back(this->mutateSequence(this->population[this->parents[selectedParent]]));
     }
     while(crossoverChildrenAmount--){
@@ -108,7 +110,43 @@ void Genetic::updatePopulation(){
     std::vector<std::vector<int>> newPopulation;
     for(int &elite:this->elites) newPopulation.push_back(this->population[elite]);
     for(std::vector<int> &child:this->children) newPopulation.push_back(child);
-    
+}
+
+int Genetic::mainLoop(int times){
+    int score=0;
+
+    // SCORE THE POPULATION
+    score = this->scorePopulation();
+    std::cout<< score << "\n";
+
+    // ELITE GENERATION
+    this->selectElite();
+
+    // PARENT SELECTION
+    this->selectParents();
+
+    // MUTATIONS AND CROSSOVERS
+    this->generateChildren();
+
+    // REPLACE THE POPULATION WITH ELITES AND NEW CHILDREN
+    this->updatePopulation();
+
+    return score;
+}
+
+int Genetic::runFor(int time){
+    auto start = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
+    double duration =0;
+    int score=0;
+    while(time>duration){
+        score = this->mainLoop(1);
+
+        end = std::chrono::high_resolution_clock::now();
+        duration = (double)std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+    }
+
+    return score;
 }
 
 Genetic::Genetic(Graph* graph){

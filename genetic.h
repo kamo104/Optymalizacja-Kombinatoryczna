@@ -52,6 +52,10 @@ class Genetic{
 
     void updatePopulation();
 
+    int mainLoop(int times){};
+
+    int runFor(int time); // run for a given time in seconds
+    
     Genetic(Graph* graph);
 };
 

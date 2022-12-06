@@ -30,6 +30,8 @@ int main(int argc, char *argv[]){
     Genetic solver(&graph);
     bool solve=false;
 
+    //część losowo, a część zachłannie osobników wygenerować
+
     // argument parsing
     for (int i=0;i<argc;i++){
         if(std::strcmp(argv[i],"-g")==0 || std::strcmp(argv[i],"--generate")==0){
@@ -83,20 +85,8 @@ int main(int argc, char *argv[]){
     // GENERATING INITIAL POPULATION
     solver.generatePopulation();
 
-    // SCORE THE POPULATION
-    std::cout << solver.scorePopulation() << "\n";
+    std::cout << solver.runFor(180) << std::endl;
 
-    // ELITE GENERATION
-    solver.selectElite();
-
-    // PARENT SELECTION
-    solver.selectParents();
-
-    // MUTATIONS AND CROSSOVERS
-    solver.generateChildren();
-
-    // REPLACE THE POPULATION WITH ELITES AND NEW CHILDREN
-    solver.updatePopulation();
 
     std::cout << "ended successfully!!" << std::endl;
     // TIMING
