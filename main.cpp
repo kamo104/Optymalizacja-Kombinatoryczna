@@ -15,6 +15,8 @@
 
 using namespace std::chrono;
 
+//  TODO make academy (save some weaker specimen and grow them)
+
 // possible arguments: 
 // -g (--generate) [nodesNum] [edgesNum] [outputFile]
 // -r (--read) [filename]
@@ -25,11 +27,12 @@ using namespace std::chrono;
 // --parent [parentPercent] (what percentage of the population will become parents)
 // -c (--crossover) [crossoverPercent] (what percantage of all children(excluding the elite) will come from crossover)
 // -m (--mutation) [mutationChance] (the probability of a random mutation at every step of a solving sequence)(1/10000)
+// -f (--run-for) [runTime] (in seconds)
 int main(int argc, char *argv[]){
     Graph graph;
     Genetic solver(&graph);
     bool solve=false;
-
+    int runTime=180;
     //część losowo, a część zachłannie osobników wygenerować
 
     // argument parsing
@@ -72,6 +75,10 @@ int main(int argc, char *argv[]){
         else if(std::strcmp(argv[i],"-s")==0 || std::strcmp(argv[i],"--solve")==0){
             solve=true;
         }
+        else if(std::strcmp(argv[i],"-f")==0 || std::strcmp(argv[i],"--run-for")==0){
+            runTime = atoi(argv[i+1]);
+            i+=1;
+        }
         else if(std::strcmp(argv[i],"--print")==0){
             std::cout << "\n";
             graph.print();
@@ -85,7 +92,7 @@ int main(int argc, char *argv[]){
     // GENERATING INITIAL POPULATION
     solver.generatePopulation();
 
-    std::cout << solver.runFor(180) << std::endl;
+    std::cout << solver.runFor(runTime) << std::endl;
 
 
     std::cout << "ended successfully!!" << std::endl;

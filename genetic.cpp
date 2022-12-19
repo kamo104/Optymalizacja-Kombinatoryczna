@@ -1,6 +1,7 @@
 #include "genetic.h"
 #include "graph.h"
 #include "greedy.h"
+#include <vector>
 
 std::vector<int> generateRandomSequence(int size){
     return generateRandomSequenceInRange(size,0,size);
@@ -29,17 +30,17 @@ void Genetic::generatePopulation(){
     this->population = population;
 }
 
-int Genetic::scorePopulation(){
+std::pair<int,int> Genetic::scorePopulation(){
     std::vector<std::pair<int,int>> scores;
     for(int i=0;i<this->populationSize;i++){
         std::pair<int,int> scorePerson;
-        scorePerson.first = greedy(this->graph,this->population[i]);
+        scorePerson.first = greedy(this->graph,this->population[i]); // our score
         scorePerson.second = i;
         scores.push_back(scorePerson);
     } 
     sort(scores.begin(),scores.end());
     this->scores = scores;
-    return scores[0].first;
+    return scores[0];
 }
 
 void Genetic::selectElite(){
@@ -113,12 +114,11 @@ void Genetic::updatePopulation(){
 }
 
 int Genetic::mainLoop(int times){
-    int score=0;
+    std::pair<int,int> score;
 
     // SCORE THE POPULATION
-    score = this->scorePopulation();
-    std::cout<< score << "\n";
-
+    this->scorePopulation();
+    
     // ELITE GENERATION
     this->selectElite();
 
@@ -131,7 +131,15 @@ int Genetic::mainLoop(int times){
     // REPLACE THE POPULATION WITH ELITES AND NEW CHILDREN
     this->updatePopulation();
 
-    return score;
+    // SCORE THE NEW POPULATION
+    score = this->scorePopulation();
+
+    // PRINT THE BEST SCORE
+    std::cout << "\nBest specimen: ";
+    for(int &vertex : this->population[score.second]) std::cout << vertex << " ";
+    std::cout << "\n With score: " << score.first;
+
+    return score.first;
 }
 
 int Genetic::runFor(int time){
@@ -151,8 +159,4 @@ int Genetic::runFor(int time){
 
 Genetic::Genetic(Graph* graph){
     this->graph = graph;
-    this->populationSize=1;
-    this->elitePercent=10;
-    this->parentPercent=20;
-    this->crossoverPercent=50;
 }

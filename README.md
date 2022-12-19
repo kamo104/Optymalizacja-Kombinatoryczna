@@ -2,7 +2,7 @@
 
 ## compilation command:
 
-    g++ genetic.cpp graph.cpp greedy.cpp main.cpp -o main.exe
+    g++ *.cpp -o main.exe
 
 ## possible arguments: 
 * -g (--generate) \[nodesNum] \[edgesNum] \[outputFile]
@@ -14,3 +14,4 @@
 * --parent \[parentPercent] (what percentage of the population will become parents)
 * -c (--crossover) \[crossoverPercent] (what percantage of all children(excluding the elite) will come from crossover)
 * -m (--mutation) \[mutationChance] (the probability of a random mutation at every step of a solving sequence)(1/10000)
+* -f (--run-for) \[runTime] (in seconds)

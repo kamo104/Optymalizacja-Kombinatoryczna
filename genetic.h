@@ -34,15 +34,19 @@ class Genetic{
 
 
     public:
-    int populationSize;
-    int elitePercent;
-    int parentPercent;
-    int crossoverPercent;
-    int mutationChance;
+    int populationSize=10;
+    int elitePercent=10;
+    int parentPercent=20;
+    int crossoverPercent=50;
+    int mutationChance=100;
+    // this->populationSize=1;
+    // this->elitePercent=10;
+    // this->parentPercent=20;
+    // this->crossoverPercent=50;
 
     void generatePopulation();
 
-    int scorePopulation();
+    std::pair<int,int> scorePopulation();
 
     void selectElite();
 
@@ -52,7 +56,7 @@ class Genetic{
 
     void updatePopulation();
 
-    int mainLoop(int times){};
+    int mainLoop(int times);
 
     int runFor(int time); // run for a given time in seconds
     
